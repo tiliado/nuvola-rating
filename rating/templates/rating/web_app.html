@@ -1,0 +1,88 @@
+<!doctype html>
+<title>{{ web_app.app_name }}</title>
+
+<div id="navbar">
+  <a href="{{ url_for('.index') }}">Home</a>
+  → <strong>{{ web_app.app_name }}</strong>
+  (<a href="{{ url_for('.web_app_json', app_id=web_app.app_id) }}">json</a>|<a
+   href="{{ url_for('.web_app_version_png', app_id=web_app.app_id, version='latest') }}">png</a>)
+</div>
+
+<h1>{{ web_app.app_name }}</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<h2>Rated Versions</h2>
+{% if versions %}
+  {% if editable %}<form method="post">{% endif %}
+  <table>
+    <tr><th>Version</th><th>Rating</th><th colspan="2">Reason</th>{% if editable %}<th>Edit</th>{% endif %}</tr>
+    {% for version in versions %}
+    {% with rating=rating_map[version] %}
+      <tr>
+        <td>
+          {% if editable %}<input type="checkbox" name="rating_version" value="{{ version }}" />{% endif %}
+          <strong><a href="./{{ version }}.json">{{ version }}</a></strong>
+        </td>
+        <td><a href="./{{ version }}.png"><img src="./{{ version }}.png" alt="({{ rating.rating }}) {{ labels[rating.rating] }}" title="({{ rating.rating }}) {{ labels[rating.rating] }}" /></a></td>
+        <td>{{ rating.reason }}</td>
+        <td>{% if rating.link %}<a href="{{ rating.link }}">Details</a>{% endif %}</td>
+        {% if editable %}<td><a href="?edit_version={{ version }}">Edit</a></td>{% endif %}
+      </tr>
+    {% endwith %}
+    {% endfor %}
+    {% if editable %}
+      <tr>
+        <td colspan="5">
+          Selected: <input type="submit" name="rating_delete" value="Delete" />
+        </td>
+      </tr>
+    {% endif %}
+  </table>
+  {% if editable %}</form>{% endif %}
+{% else %}
+  <p>There are no rated versions!</p>
+{% endif %}
+
+{% if editable %}
+
+{% if edit_version %}
+  <h2>Edit Version {{ edit_version }}</h2>
+{% else %}
+  <h2>Add New Rating</h2>
+{% endif %}
+
+<form method="post">
+  {% if edit_version %}
+    <input type="hidden" name="edit_version" value="{{ edit_version }}" />
+  {% endif %}
+  {% if form_errors %}
+    <ul class="form-errors">
+      {% for error in form_errors %}<li>{{ error }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+  <p>
+    <label>Version:</label> <input type="text" name="rating_version" value="{{ form.rating_version }}" /><br />
+    <label>Rating:</label><select name="rating_rating">
+    {% for option in options %}
+      <option value="{{ option }}"{% if form.rating_rating == option %} selected="selected"{% endif %}> ({{ option }}) {{ labels[option] }}</option>
+    {% endfor %}
+    </select><br />
+    <label>Reason:</label> <input type="text" name="rating_reason" value="{{ form.rating_reason }}" /><br />
+    <label>Link:</label> <input type="text" name="rating_link" value="{{ form.rating_link }}" /><br />
+    {% if edit_version %}
+      <input type="submit" name="rating_edit" value="Edit rating" /><a href="./">Cancel</a>
+    {% else %}
+      <input type="submit" name="rating_add" value="Add rating" />
+    {% endif %}
+  </p>
+</form>
+{% endif %}

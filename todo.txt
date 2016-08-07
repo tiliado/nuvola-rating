@@ -1,0 +1,13 @@
+To Do List
+==========
+
+  * Only admin is allowed to edit data
+  * Implement CSRF - https://flask-seasurf.readthedocs.io/en/latest/
+  * Write documentation
+  * Make code more modular
+  * Add argument parser to select host/port
+  * Implement caching (memcached)
+  * Improve templates
+  * Add CSS styles
+  * Write README.md
+  * Deploy to server

@@ -1,0 +1,77 @@
+<!doctype html>
+<title>Web App Rating</title>
+
+<div id="navbar">
+  <strong>Home</strong>
+  (<a href="{{ url_for('.index_json') }}">json</a>)
+</div>
+
+<h1>Web App Rating</h1>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+<h2>Rated Web Apps</h2>
+{% if web_apps %}
+  {% if editable %}<form method="post">{% endif %}
+  <table>
+    <tr><th>Name</th><th>Version</th><th>Rating</th><th colspan="2">Reason</th>{% if editable %}<th>Edit</th>{% endif %}</tr>
+    {% for app in web_apps %}
+      <tr>
+        <td>
+          {% if editable %}<input type="checkbox" name="app_id" value="{{ app.id }}" />{% endif %}
+          <strong><a href="./{{ app.id }}/">{{ app.name }}</a></strong>
+        </td>
+        <td>{{ app.version }}</td>
+        <td><a href="./{{ app.id }}/latest.png"><img src="./{{ app.id }}/latest.png" alt="({{ app.rating }}) {{ labels[app.rating] }}" title="({{ app.rating }}) {{ labels[app.rating] }}" /></a></td>
+        <td>{{ app.reason }}</td>
+        <td>{% if app.link %}<a href="{{ app.link }}">Details</a>{% endif %}</td>
+        {% if editable %}<td><a href="?edit_id={{ app.id }}">Edit</a></td>{% endif %}
+      </tr>
+    </tr>
+    {% endfor %}
+    {% if editable %}
+      <tr>
+        <td colspan="5">
+          Selected: <input type="submit" name="app_delete" value="Delete" />
+        </td>
+      </tr>
+    {% endif %}
+  </table>
+  {% if editable %}</form>{% endif %}
+{% else %}
+  <p>There are no web apps!</p>
+{% endif %}
+
+{% if editable %}
+  {% if edit_id %}
+    <h2>Edit Web App {{ edit_id }}</h2>
+  {% else %}
+    <h2>Add New Web App</h2>
+  {% endif %}
+
+<form method="post">
+  {% if form_errors %}
+    <ul class="form-errors">
+      {% for error in form_errors %}<li>{{ error }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+  <p>
+    <label>Id:</label> <input type="text" name="app_id" value="{{ form.app_id }}" />
+    <label>Name:</label> <input type="text" name="app_name" value="{{ form.app_name }}" />
+    {% if edit_id %}
+    <input type="submit" name="app_edit" value="Edit" /><a href="./">Cancel</a>
+  {% else %}
+    <input type="submit" name="app_add" value="Add" />
+  {% endif %}
+  </p>
+</form>
+{% endif %}

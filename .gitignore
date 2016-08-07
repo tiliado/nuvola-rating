@@ -1,0 +1,4 @@
+secret-key.dat
+__pycache__
+*.sqlite
+env
