@@ -4,6 +4,12 @@
 <div id="navbar">
   <strong>Home</strong>
   (<a href="{{ url_for('.index_json') }}">json</a>)
+  ::
+  {% if session['user'] %}
+    <em>{{ session['username'] }}</em> :: <a href="{{ url_for('uauth.logout') }}">Log out</a>
+  {% else %}
+    <em>{{ session['username'] }}</em> :: <a href="{{ url_for('uauth.login') }}">Log in</a>
+  {% endif %}
 </div>
 
 <h1>Web App Rating</h1>

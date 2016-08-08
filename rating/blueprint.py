@@ -4,6 +4,7 @@ import easybadges
 from io import BytesIO
 from collections import namedtuple
 import re
+import uauth
 
 NAME = 'rating'
 
@@ -63,7 +64,7 @@ blueprint = Blueprint(NAME, __name__, template_folder='templates', static_folder
 def index():
     APP_ID = "app_id"
     APP_NAME = "app_name"
-    editable=True
+    editable = uauth.is_logged_in()
     form_errors = []
     edit_id = request.form.get("edit_id", request.args.get("edit_id"))
     web_app = WebAppRating.entities.get(app_id=edit_id) if edit_id else None
@@ -76,7 +77,7 @@ def index():
             "app_id": edit_id,
             "app_name": web_app.app_name,
         }
-    if request.method == 'POST':
+    if editable and request.method == 'POST':
         if "app_add" in request.form or "app_edit" in request.form:
             form = request.form
             app_id = request.form[APP_ID].strip()
@@ -148,7 +149,7 @@ def index_json():
 
 @blueprint.route('/<app_id>/', methods=['GET', 'POST'])
 def web_app(app_id):
-    editable=True
+    editable = uauth.is_logged_in()
     web_app = WebAppRating.entities.get(app_id=app_id)
     
     form_errors = []
@@ -169,7 +170,7 @@ def web_app(app_id):
          }  
              
         
-    if request.method == 'POST':
+    if editable and request.method == 'POST':
         if "rating_add" in request.form or "rating_edit" in request.form:
             form = request.form
             version = request.form["rating_version"].strip()
@@ -274,9 +275,6 @@ def web_app_version_png(app_id, version):
                 info = None
     
     rating = info["rating"] if info else "X"
-    
-    
-    
     variants = ["(%s) %s" % entry for entry in RATING_LABELS.items()]
     label = RATING_LABELS[rating]
     color = RATING_COLORS[rating]

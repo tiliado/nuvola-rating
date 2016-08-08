@@ -3,6 +3,7 @@ import config
 from flask import Flask
 import uorm.sqlite 
 import rating
+import uauth
 
 db_file = config.PROJECT_ID
 if __name__ == '__main__':
@@ -13,7 +14,9 @@ uorm.sqlite.connect(db_file, namespace="nuvola")
 
 app = Flask(__name__)
 app.secret_key = config.SECRET_KEY
+uauth.add_admin(config.ADMIN_USERNAME, config.ADMIN_PASSWORD)
 app.register_blueprint(rating.blueprint)
+app.register_blueprint(uauth.blueprint)
 
 @app.errorhandler(500)
 def server_error(e):

@@ -1,7 +1,6 @@
 To Do List
 ==========
 
-  * Only admin is allowed to edit data
   * Implement CSRF - https://flask-seasurf.readthedocs.io/en/latest/
   * Write documentation
   * Make code more modular

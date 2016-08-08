@@ -6,6 +6,12 @@
   → <strong>{{ web_app.app_name }}</strong>
   (<a href="{{ url_for('.web_app_json', app_id=web_app.app_id) }}">json</a>|<a
    href="{{ url_for('.web_app_version_png', app_id=web_app.app_id, version='latest') }}">png</a>)
+  ::
+  {% if session['user'] %}
+    <em>{{ session['username'] }}</em> :: <a href="{{ url_for('uauth.logout') }}">Log out</a>
+  {% else %}
+    <em>{{ session['username'] }}</em> :: <a href="{{ url_for('uauth.login') }}">Log in</a>
+  {% endif %}
 </div>
 
 <h1>{{ web_app.app_name }}</h1>
